@@ -23,7 +23,7 @@
       padding: 1rem;
     }
     .hearts {
-      font-size: 2rem;
+      font-size: 3rem;
       animation: pulse 1s infinite;
       margin-top: 1rem;
     }
@@ -39,6 +39,7 @@
       padding: 2rem;
       border-radius: 12px;
       box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+      display: none;
     }
     label {
       display: block;
@@ -87,12 +88,12 @@
 
   <!-- لودینگ -->
   <div id="loader">
-    <div id="loader-text"></div>
+    <div id="loader-text">Mehdi: I love you shamim 💙</div>
     <div class="hearts">💙💙💙</div>
   </div>
 
   <!-- محتوای اصلی -->
-  <div class="container" id="main-content" style="display:none;">
+  <div class="container" id="main-content">
     <h2>ثبت فروش یوزر</h2>
     <form id="salesForm">
       <label for="customerName">نام مشتری:</label>
@@ -130,46 +131,23 @@
   </div>
 
   <script>
-    const texts = [
-      "بی‌تو به سر نمی‌شود ای تو به تن در آمده\nدل ز تو برگرفته‌ام، دل ز تو بر نمی‌شود",
-      "هر کسی با شوق یاری می‌پرد\nمن ز شوقت با خیالت می‌پرم",
-      "چو با منی، چه حاجت که دیگران بپرسم؟\nز تو چو دل گرفتم، دگر چه دل‌ستانی؟",
-      "تو مرا جان و جهانی، چه کنم جان و جهان را؟\nکه تویی جان جهانی، ز تو پر شد همه جان‌ها",
-
-"عاشق شو ار نه روزی کار جهان سر آید\nناخوانده نقش مقصود از کارگاه هستی",
-      "بی‌تو من از جان خود، ای جان و جانان بگذرم\nگر تو مرا ز آن خود دانی، به جانم آزمون",
-      "تو مرا جان و جهانی، ز تو دل نمی‌کنم\nگر بگویی که برو، جان ز تنم برون کنم",
-      "ای عشق، همه بهانه از توست\nمن خام شدم، پخته ز توست",
-      "گر نباشی تو مرا، عمر چه سود است مرا؟\nبی تو گر جان ببرند، جان نبرد از دل من",
-      "در هوایت بی‌قرارم روز و شب\nسر ز پایت برندارم روز و شب"
-    ];
-
-    const today = new Date();
-    const index = today.getDate() % texts.length;
-
-    // برای دسترسی به المان‌ها
-    const loader = document.getElementById("loader");
-    const mainContent = document.getElementById("main-content");
-    const loaderText = document.getElementById("loader-text");
-    const form = document.getElementById("salesForm");
-    const table = document.getElementById("salesTable");
-    const tbody = table.querySelector("tbody");
-
-    // نمایش متن لودینگ
-    document.addEventListener("DOMContentLoaded", () => {
-      loaderText.innerText = texts[index];
+    // بعد از 3 ثانیه لودینگ مخفی و صفحه اصلی نمایش داده شود
+    window.onload = function() {
       setTimeout(() => {
-        loader.style.display = "none";
-        mainContent.style.display = "block";
+        document.getElementById("loader").style.display = "none";
+        const main = document.getElementById("main-content");
+        main.style.display = "block";
         loadData();
       }, 3000);
-    });
+    };
 
-    // بارگذاری داده‌ها از localStorage و نمایش در جدول
-    function loadData() {
+    const form = document.getElementById("salesForm");
+    const tbody = document.querySelector("#salesTable tbody");
+    const table = document.getElementById("salesTable"); 
+function loadData() {
       const data = JSON.parse(localStorage.getItem("salesData") || "[]");
       tbody.innerHTML = "";
-      if(data.length > 0) {
+      if (data.length > 0) {
         table.style.display = "table";
         data.forEach((item, i) => {
           const tr = document.createElement("tr");
@@ -188,17 +166,15 @@
       }
     }
 
-    // اضافه کردن رویداد حذف برای هر دکمه
     function addDeleteEvents() {
       document.querySelectorAll(".deleteBtn").forEach(btn => {
-        btn.addEventListener("click", (e) => {
+        btn.onclick = (e) => {
           const idx = e.target.getAttribute("data-index");
           deleteItem(idx);
-        });
+        };
       });
     }
 
-    // حذف آیتم از localStorage و رفرش جدول
     function deleteItem(index) {
       let data = JSON.parse(localStorage.getItem("salesData") || "[]");
       data.splice(index, 1);
@@ -206,15 +182,14 @@
       loadData();
     }
 
-    // ثبت داده جدید
-    form.addEventListener("submit", e => {
+    form.onsubmit = e => {
       e.preventDefault();
       const customerName = form.customerName.value.trim();
       const subscriptionPeriod = form.subscriptionPeriod.value;
       const userCount = form.userCount.value;
       const paymentAmount = form.paymentAmount.value;
 
-      if(!customerName  !subscriptionPeriod  !userCount || !paymentAmount) {
+      if (!customerName  !subscriptionPeriod  !userCount || !paymentAmount) {
         alert("لطفا همه فیلدها را پر کنید.");
         return;
       }
@@ -232,7 +207,8 @@
 
       form.reset();
       loadData();
-    });
+    };
   </script>
+
 </body>
 </html>
