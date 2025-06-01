@@ -62,6 +62,7 @@
       margin-top: 5px;
       border: 1px solid #ccc;
       border-radius: 8px;
+      box-sizing: border-box;
     }
 
     button {
@@ -87,20 +88,20 @@
   <div class="container" id="main-content" style="display:none;">
     <h2>ثبت فروش یوزر</h2>
     <label>نام مشتری:</label>
-    <input type="text" />
+    <input type="text" placeholder="نام مشتری را وارد کنید" />
 
     <label>مدت اشتراک:</label>
     <select>
-      <option>1 ماهه</option>
-      <option>2 ماهه</option>
-      <option>3 ماهه</option>
+      <option value="1">1 ماهه</option>
+      <option value="2">2 ماهه</option>
+      <option value="3">3 ماهه</option>
     </select>
 
-    <label>مبلغ پرداختی:</label>
-    <input type="number" />
+    <label>تعداد یوزر فروخته شده:</label>
+    <input type="number" min="1" placeholder="تعداد یوزر فروخته شده" />
 
-    <label>توضیحات:</label>
-    <input type="text" />
+    <label>مبلغ پرداختی:</label>
+    <input type="number" min="0" placeholder="مبلغ پرداختی به تومان" />
 
     <button>ثبت</button>
   </div>
@@ -113,23 +114,4 @@
       "تو مرا جان و جهانی، چه کنم جان و جهان را؟\nکه تویی جان جهانی، ز تو پر شد همه جان‌ها",
       "عاشق شو ار نه روزی کار جهان سر آید\nناخوانده نقش مقصود از کارگاه هستی",
       "بی‌تو من از جان خود، ای جان و جانان بگذرم\nگر تو مرا ز آن خود دانی، به جانم آزمون",
-      "تو مرا جان و جهانی، ز تو دل نمی‌کنم\nگر بگویی که برو، جان ز تنم برون کنم",
-      "ای عشق، همه بهانه از توست\nمن خام شدم، پخته ز توست",
-      "گر نباشی تو مرا، عمر چه سود است مرا؟\nبی تو گر جان ببرند، جان نبرد از دل من",
-      "در هوایت بی‌قرارم روز و شب\nسر ز پایت برندارم روز و شب"
-    ];
-
-    const today = new Date();
-    const index = today.getDate() % texts.length;
-
-    document.addEventListener("DOMContentLoaded", () => {
-      document.getElementById("loader-text").innerText = texts[index];
-
-      setTimeout(() => {
-        document.getElementById("loader").style.display = "none";
-        document.getElementById("main-content").style.display = "block";
-      }, 3000);
-    });
-  </script>
-</body>
-</html>
+      "تو مرا جان و جهانی، ز تو دل نمی‌کنم
