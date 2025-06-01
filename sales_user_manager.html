@@ -1,0 +1,182 @@
+
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>مدیریت فروش یوزر</title>
+<style>
+  body { font-family: Tahoma, sans-serif; max-width: 600px; margin: auto; padding: 20px; background: #f9f9f9; }
+  h1 { text-align: center; color: #333; }
+  label { display: block; margin-top: 10px; font-weight: bold; }
+  input[type=text], input[type=number] { width: 100%; padding: 8px; margin-top: 5px; box-sizing: border-box; }
+  button { margin-top: 15px; padding: 10px 15px; background-color: #1976d2; color: white; border: none; cursor: pointer; }
+  button:hover { background-color: #135ba1; }
+  table { width: 100%; margin-top: 20px; border-collapse: collapse; }
+  th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+  th { background: #e0e0e0; }
+  .small-btn { padding: 5px 8px; font-size: 12px; }
+  .pay-input { width: 70px; margin-right: 5px; }
+  .error { color: red; font-size: 14px; }
+</style>
+</head>
+<body>
+
+<h1>مدیریت فروش یوزر</h1>
+
+<div>
+  <label for="customerName">نام مشتری:</label>
+  <input type="text" id="customerName" placeholder="مثلاً علی رضایی" />
+
+  <label>تعداد یوزر یک‌ماهه (75,000 تومان):</label>
+  <input type="number" id="oneMonth" min="0" value="0" />
+
+  <label>تعداد یوزر دوماهه (140,000 تومان):</label>
+  <input type="number" id="twoMonth" min="0" value="0" />
+
+  <label>تعداد یوزر سه‌ماهه (220,000 تومان):</label>
+  <input type="number" id="threeMonth" min="0" value="0" />
+
+  <button onclick="addOrUpdateCustomer()">ثبت مشتری / بروزرسانی</button>
+  <p class="error" id="errorMsg"></p>
+</div>
+
+<h2>لیست مشتری‌ها</h2>
+<table>
+  <thead>
+    <tr>
+      <th>نام مشتری</th>
+      <th>1 ماهه</th>
+      <th>2 ماهه</th>
+      <th>3 ماهه</th>
+      <th>بدهکاری کل (تومان)</th>
+      <th>پرداخت جزئی</th>
+      <th>عملیات</th>
+    </tr>
+  </thead>
+  <tbody id="customersTableBody"></tbody>
+</table>
+
+<p style="margin-top: 20px; font-weight: bold;">
+  مجموع کل بدهکاری همه مشتری‌ها: <span id="totalDebt">0</span> تومان
+</p>
+
+<script>
+  const prices = { one: 75000, two: 140000, three: 220000 };
+  let customers = JSON.parse(localStorage.getItem('customersData') || '[]');
+
+  function calculateDebt(c) {
+    return c.oneMonth * prices.one + c.twoMonth * prices.two + c.threeMonth * prices.three - (c.paid || 0);
+  }
+
+  function saveData() {
+    localStorage.setItem('customersData', JSON.stringify(customers));
+  }
+
+  function renderTable() {
+    const tbody = document.getElementById('customersTableBody');
+    tbody.innerHTML = '';
+    let totalDebtAll = 0;
+
+    customers.forEach((c, index) => {
+      const debt = calculateDebt(c);
+      totalDebtAll += debt;
+      tbody.innerHTML += `
+        <tr>
+          <td>${c.name}</td>
+          <td>${c.oneMonth}</td>
+          <td>${c.twoMonth}</td>
+          <td>${c.threeMonth}</td>
+          <td>${debt.toLocaleString()}</td>
+          <td>
+            <input type="number" min="0" class="pay-input" id="payInput${index}" placeholder="مبلغ"/>
+            <button class="small-btn" onclick="addPayment(${index})">ثبت پرداخت</button>
+          </td>
+          <td><button class="small-btn" onclick="deleteCustomer(${index})" style="background-color:#d32f2f;">حذف</button></td>
+        </tr>
+      `;
+    });
+
+    document.getElementById('totalDebt').textContent = totalDebtAll.toLocaleString();
+  }
+
+  function addOrUpdateCustomer() {
+    const name = document.getElementById('customerName').value.trim();
+    const oneMonth = parseInt(document.getElementById('oneMonth').value) || 0;
+    const twoMonth = parseInt(document.getElementById('twoMonth').value) || 0;
+    const threeMonth = parseInt(document.getElementById('threeMonth').value) || 0;
+    const errorMsg = document.getElementById('errorMsg');
+
+    errorMsg.textContent = '';
+    if (!name) {
+      errorMsg.textContent = 'لطفاً نام مشتری را وارد کنید.';
+      return;
+    }
+    if (oneMonth < 0 || twoMonth < 0 || threeMonth < 0) {
+      errorMsg.textContent = 'تعداد یوزرها نمی‌تواند منفی باشد.';
+      return;
+    }
+
+    // بررسی اینکه مشتری وجود داره یا نه
+    const existingIndex = customers.findIndex(c => c.name.toLowerCase() === name.toLowerCase());
+    if (existingIndex >= 0) {
+      // بروزرسانی
+      customers[existingIndex].oneMonth += oneMonth;
+      customers[existingIndex].twoMonth += twoMonth;
+      customers[existingIndex].threeMonth += threeMonth;
+    } else {
+      // مشتری جدید
+      customers.push({
+        name,
+        oneMonth,
+        twoMonth,
+        threeMonth,
+        paid: 0
+      });
+    }
+
+    saveData();
+    renderTable();
+    clearInputs();
+  }
+
+  function addPayment(index) {
+    const payInput = document.getElementById(`payInput${index}`);
+    const payment = parseInt(payInput.value);
+    if (isNaN(payment) || payment <= 0) {
+      alert('لطفاً مبلغ پرداختی معتبر وارد کنید.');
+      return;
+    }
+
+    customers[index].paid = (customers[index].paid || 0) + payment;
+    if (customers[index].paid > customers[index].oneMonth * prices.one + customers[index].twoMonth * prices.two + customers[index].threeMonth * prices.three) {
+      alert('مبلغ پرداختی بیشتر از بدهی کل است!');
+      customers[index].paid -= payment;
+      return;
+    }
+
+    saveData();
+    renderTable();
+  }
+
+  function deleteCustomer(index) {
+    if (confirm(`آیا از حذف مشتری "${customers[index].name}" اطمینان دارید؟`)) {
+      customers.splice(index, 1);
+      saveData();
+      renderTable();
+    }
+  }
+
+  function clearInputs() {
+    document.getElementById('customerName').value = '';
+    document.getElementById('oneMonth').value = '0';
+    document.getElementById('twoMonth').value = '0';
+    document.getElementById('threeMonth').value = '0';
+    document.getElementById('errorMsg').textContent = '';
+  }
+
+  renderTable();
+</script>
+
+</body>
+</html>
