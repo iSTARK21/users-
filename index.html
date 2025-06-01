@@ -3,212 +3,131 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>حسابداری کاربران</title>
+  <title>مدیریت فروش یوزر</title>
   <style>
     body {
       margin: 0;
-      font-family: "Vazirmatn", sans-serif;
-      background: #f0f4f8;
-      color: #333;
+      font-family: 'Vazirmatn', sans-serif;
+      background: #f1f5f9;
       direction: rtl;
+      color: #333;
     }
-    #loader {
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: #111;
-      color: white;
-      display: flex; flex-direction: column; justify-content: center; align-items: center;
-      z-index: 9999;
-      text-align: center;
-      padding: 1rem;
-    }
-    .hearts {
-      font-size: 3rem;
-      animation: pulse 1s infinite;
-      margin-top: 1rem;
-    }
-    @keyframes pulse {
-      0% { transform: scale(1); opacity: 0.5; }
-      50% { transform: scale(1.3); opacity: 1; }
-      100% { transform: scale(1); opacity: 0.5; }
-    }
+
     .container {
       max-width: 800px;
-      margin: 80px auto 40px;
-      background: white;
+      margin: 40px auto;
+      background: #fff;
       padding: 2rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-      display: none;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
     }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      color: #007bff;
+    }
+
     label {
       display: block;
       margin-top: 1rem;
       font-weight: 600;
     }
+
     input, select {
       width: 100%;
-      padding: 8px;
-      margin-top: 5px;
+      padding: 10px;
+      margin-top: 6px;
       border: 1px solid #ccc;
-      border-radius: 8px;
-      box-sizing: border-box;
+      border-radius: 10px;
+      font-size: 1rem;
     }
+
     button {
       margin-top: 1.5rem;
-      padding: 10px 20px;
+      padding: 12px;
       background-color: #007bff;
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
       color: white;
+      font-size: 1rem;
       cursor: pointer;
-      font-weight: 600;
       transition: background-color 0.3s ease;
     }
+
     button:hover {
       background-color: #0056b3;
     }
+
     table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 2rem;
     }
+
     th, td {
       border: 1px solid #ccc;
-      padding: 8px;
+      padding: 10px;
       text-align: center;
     }
+
     th {
       background-color: #007bff;
       color: white;
+    }
+
+    .delete-btn {
+      background-color: #dc3545;
+      border: none;
+      color: white;
+      padding: 6px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .delete-btn:hover {
+      background-color: #b52b3b;
     }
   </style>
 </head>
 <body>
 
-  <!-- لودینگ -->
-  <div id="loader">
-    <div id="loader-text">Mehdi: I love you shamim 💙</div>
-    <div class="hearts">💙💙💙</div>
-  </div>
+<div class="container">
+  <h2>فرم ثبت فروش یوزر</h2>
+  <form id="salesForm">
+    <label for="customerName">نام مشتری:</label>
+    <input id="customerName" required placeholder="مثال: آقای رضایی" />
 
-  <!-- محتوای اصلی -->
-  <div class="container" id="main-content">
-    <h2>ثبت فروش یوزر</h2>
-    <form id="salesForm">
-      <label for="customerName">نام مشتری:</label>
-      <input id="customerName" name="customerName" type="text" placeholder="نام مشتری را وارد کنید" required />
+    <label for="subscriptionPeriod">مدت اشتراک:</label>
+    <select id="subscriptionPeriod" required>
+      <option value="" disabled selected>انتخاب کنید</option>
+      <option value="1">1 ماهه</option>
+      <option value="2">2 ماهه</option>
+      <option value="3">3 ماهه</option>
+    </select>
 
-      <label for="subscriptionPeriod">مدت اشتراک:</label>
-      <select id="subscriptionPeriod" name="subscriptionPeriod" required>
-        <option value="" disabled selected>انتخاب کنید</option>
-        <option value="1">1 ماهه</option>
-        <option value="2">2 ماهه</option>
-        <option value="3">3 ماهه</option>
-      </select>
+    <label for="userCount">تعداد یوزر:</label>
+    <input id="userCount" type="number" required placeholder="مثال: 5" min="1" />
 
-      <label for="userCount">تعداد یوزر فروخته شده:</label>
-      <input id="userCount" name="userCount" type="number" min="1" placeholder="تعداد یوزر فروخته شده" required />
+    <button type="submit">ثبت اطلاعات</button>
+  </form>
 
-      <label for="paymentAmount">مبلغ پرداختی (تومان):</label>
-      <input id="paymentAmount" name="paymentAmount" type="number" min="0" placeholder="مبلغ پرداختی" required />
+  <table id="salesTable" style="display: none;">
+    <thead>
+      <tr>
+        <th>نام مشتری</th>
+        <th>یوزرهای خریداری شده</th>
+        <th>جمع مبلغ (تومان)</th>
+        <th>حذف</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
 
-      <button type="submit">ثبت</button>
-    </form>
+<script>
+  const form = document.getElementById("salesForm");
+  const table = document.getElementById("salesTable");
+  const tbody = table.querySelector("tbody");
 
-    <table id="salesTable" style="display:none;">
-      <thead>
-        <tr>
-          <th>نام مشتری</th>
-          <th>مدت اشتراک</th>
-          <th>تعداد یوزر</th>
-          <th>مبلغ پرداختی (تومان)</th>
-          <th>حذف</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
-
-  <script>
-    // بعد از 3 ثانیه لودینگ مخفی و صفحه اصلی نمایش داده شود
-    window.onload = function() {
-      setTimeout(() => {
-        document.getElementById("loader").style.display = "none";
-        const main = document.getElementById("main-content");
-        main.style.display = "block";
-        loadData();
-      }, 3000);
-    };
-
-    const form = document.getElementById("salesForm");
-    const tbody = document.querySelector("#salesTable tbody");
-    const table = document.getElementById("salesTable"); 
-function loadData() {
-      const data = JSON.parse(localStorage.getItem("salesData") || "[]");
-      tbody.innerHTML = "";
-      if (data.length > 0) {
-        table.style.display = "table";
-        data.forEach((item, i) => {
-          const tr = document.createElement("tr");
-          tr.innerHTML = 
-            <td>${item.customerName}</td>
-            <td>${item.subscriptionPeriod} ماهه</td>
-            <td>${item.userCount}</td>
-            <td>${item.paymentAmount}</td>
-            <td><button data-index="${i}" class="deleteBtn">حذف</button></td>
-          ;
-          tbody.appendChild(tr);
-        });
-        addDeleteEvents();
-      } else {
-        table.style.display = "none";
-      }
-    }
-
-    function addDeleteEvents() {
-      document.querySelectorAll(".deleteBtn").forEach(btn => {
-        btn.onclick = (e) => {
-          const idx = e.target.getAttribute("data-index");
-          deleteItem(idx);
-        };
-      });
-    }
-
-    function deleteItem(index) {
-      let data = JSON.parse(localStorage.getItem("salesData") || "[]");
-      data.splice(index, 1);
-      localStorage.setItem("salesData", JSON.stringify(data));
-      loadData();
-    }
-
-    form.onsubmit = e => {
-      e.preventDefault();
-      const customerName = form.customerName.value.trim();
-      const subscriptionPeriod = form.subscriptionPeriod.value;
-      const userCount = form.userCount.value;
-      const paymentAmount = form.paymentAmount.value;
-
-      if (!customerName  !subscriptionPeriod  !userCount || !paymentAmount) {
-        alert("لطفا همه فیلدها را پر کنید.");
-        return;
-      }
-
-      const newData = {
-        customerName,
-        subscriptionPeriod,
-        userCount,
-        paymentAmount
-      };
-
-      let data = JSON.parse(localStorage.getItem("salesData") || "[]");
-      data.push(newData);
-      localStorage.setItem("salesData", JSON.stringify(data));
-
-      form.reset();
-      loadData();
-    };
-  </script>
-
-</body>
-</html>
+  const priceMap = {
