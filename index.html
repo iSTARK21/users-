@@ -2,7 +2,7 @@
 <html lang="fa">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>حسابداری کاربران</title>
   <style>
     body {
@@ -12,50 +12,39 @@
       color: #333;
       direction: rtl;
     }
-
     #loader {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      top: 0; left: 0; width: 100%; height: 100%;
       background: #111;
       color: white;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
       z-index: 9999;
       text-align: center;
       padding: 1rem;
     }
-
     .hearts {
       font-size: 2rem;
       animation: pulse 1s infinite;
       margin-top: 1rem;
     }
-
     @keyframes pulse {
       0% { transform: scale(1); opacity: 0.5; }
       50% { transform: scale(1.3); opacity: 1; }
       100% { transform: scale(1); opacity: 0.5; }
     }
-
     .container {
-      max-width: 600px;
-      margin: 100px auto;
+      max-width: 800px;
+      margin: 80px auto 40px;
       background: white;
       padding: 2rem;
       border-radius: 12px;
       box-shadow: 0 4px 16px rgba(0,0,0,0.1);
     }
-
     label {
       display: block;
       margin-top: 1rem;
+      font-weight: 600;
     }
-
     input, select {
       width: 100%;
       padding: 8px;
@@ -64,7 +53,6 @@
       border-radius: 8px;
       box-sizing: border-box;
     }
-
     button {
       margin-top: 1.5rem;
       padding: 10px 20px;
@@ -73,6 +61,25 @@
       border-radius: 8px;
       color: white;
       cursor: pointer;
+      font-weight: 600;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 2rem;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: center;
+    }
+    th {
+      background-color: #007bff;
+      color: white;
     }
   </style>
 </head>
@@ -87,23 +94,39 @@
   <!-- محتوای اصلی -->
   <div class="container" id="main-content" style="display:none;">
     <h2>ثبت فروش یوزر</h2>
-    <label>نام مشتری:</label>
-    <input type="text" placeholder="نام مشتری را وارد کنید" />
+    <form id="salesForm">
+      <label for="customerName">نام مشتری:</label>
+      <input id="customerName" name="customerName" type="text" placeholder="نام مشتری را وارد کنید" required />
 
-    <label>مدت اشتراک:</label>
-    <select>
-      <option value="1">1 ماهه</option>
-      <option value="2">2 ماهه</option>
-      <option value="3">3 ماهه</option>
-    </select>
+      <label for="subscriptionPeriod">مدت اشتراک:</label>
+      <select id="subscriptionPeriod" name="subscriptionPeriod" required>
+        <option value="" disabled selected>انتخاب کنید</option>
+        <option value="1">1 ماهه</option>
+        <option value="2">2 ماهه</option>
+        <option value="3">3 ماهه</option>
+      </select>
 
-    <label>تعداد یوزر فروخته شده:</label>
-    <input type="number" min="1" placeholder="تعداد یوزر فروخته شده" />
+      <label for="userCount">تعداد یوزر فروخته شده:</label>
+      <input id="userCount" name="userCount" type="number" min="1" placeholder="تعداد یوزر فروخته شده" required />
 
-    <label>مبلغ پرداختی:</label>
-    <input type="number" min="0" placeholder="مبلغ پرداختی به تومان" />
+      <label for="paymentAmount">مبلغ پرداختی (تومان):</label>
+      <input id="paymentAmount" name="paymentAmount" type="number" min="0" placeholder="مبلغ پرداختی" required />
 
-    <button>ثبت</button>
+      <button type="submit">ثبت</button>
+    </form>
+
+    <table id="salesTable" style="display:none;">
+      <thead>
+        <tr>
+          <th>نام مشتری</th>
+          <th>مدت اشتراک</th>
+          <th>تعداد یوزر</th>
+          <th>مبلغ پرداختی (تومان)</th>
+          <th>حذف</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
   </div>
 
   <script>
@@ -112,6 +135,104 @@
       "هر کسی با شوق یاری می‌پرد\nمن ز شوقت با خیالت می‌پرم",
       "چو با منی، چه حاجت که دیگران بپرسم؟\nز تو چو دل گرفتم، دگر چه دل‌ستانی؟",
       "تو مرا جان و جهانی، چه کنم جان و جهان را؟\nکه تویی جان جهانی، ز تو پر شد همه جان‌ها",
-      "عاشق شو ار نه روزی کار جهان سر آید\nناخوانده نقش مقصود از کارگاه هستی",
+
+"عاشق شو ار نه روزی کار جهان سر آید\nناخوانده نقش مقصود از کارگاه هستی",
       "بی‌تو من از جان خود، ای جان و جانان بگذرم\nگر تو مرا ز آن خود دانی، به جانم آزمون",
-      "تو مرا جان و جهانی، ز تو دل نمی‌کنم
+      "تو مرا جان و جهانی، ز تو دل نمی‌کنم\nگر بگویی که برو، جان ز تنم برون کنم",
+      "ای عشق، همه بهانه از توست\nمن خام شدم، پخته ز توست",
+      "گر نباشی تو مرا، عمر چه سود است مرا؟\nبی تو گر جان ببرند، جان نبرد از دل من",
+      "در هوایت بی‌قرارم روز و شب\nسر ز پایت برندارم روز و شب"
+    ];
+
+    const today = new Date();
+    const index = today.getDate() % texts.length;
+
+    // برای دسترسی به المان‌ها
+    const loader = document.getElementById("loader");
+    const mainContent = document.getElementById("main-content");
+    const loaderText = document.getElementById("loader-text");
+    const form = document.getElementById("salesForm");
+    const table = document.getElementById("salesTable");
+    const tbody = table.querySelector("tbody");
+
+    // نمایش متن لودینگ
+    document.addEventListener("DOMContentLoaded", () => {
+      loaderText.innerText = texts[index];
+      setTimeout(() => {
+        loader.style.display = "none";
+        mainContent.style.display = "block";
+        loadData();
+      }, 3000);
+    });
+
+    // بارگذاری داده‌ها از localStorage و نمایش در جدول
+    function loadData() {
+      const data = JSON.parse(localStorage.getItem("salesData") || "[]");
+      tbody.innerHTML = "";
+      if(data.length > 0) {
+        table.style.display = "table";
+        data.forEach((item, i) => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = 
+            <td>${item.customerName}</td>
+            <td>${item.subscriptionPeriod} ماهه</td>
+            <td>${item.userCount}</td>
+            <td>${item.paymentAmount}</td>
+            <td><button data-index="${i}" class="deleteBtn">حذف</button></td>
+          ;
+          tbody.appendChild(tr);
+        });
+        addDeleteEvents();
+      } else {
+        table.style.display = "none";
+      }
+    }
+
+    // اضافه کردن رویداد حذف برای هر دکمه
+    function addDeleteEvents() {
+      document.querySelectorAll(".deleteBtn").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          const idx = e.target.getAttribute("data-index");
+          deleteItem(idx);
+        });
+      });
+    }
+
+    // حذف آیتم از localStorage و رفرش جدول
+    function deleteItem(index) {
+      let data = JSON.parse(localStorage.getItem("salesData") || "[]");
+      data.splice(index, 1);
+      localStorage.setItem("salesData", JSON.stringify(data));
+      loadData();
+    }
+
+    // ثبت داده جدید
+    form.addEventListener("submit", e => {
+      e.preventDefault();
+      const customerName = form.customerName.value.trim();
+      const subscriptionPeriod = form.subscriptionPeriod.value;
+      const userCount = form.userCount.value;
+      const paymentAmount = form.paymentAmount.value;
+
+      if(!customerName  !subscriptionPeriod  !userCount || !paymentAmount) {
+        alert("لطفا همه فیلدها را پر کنید.");
+        return;
+      }
+
+      const newData = {
+        customerName,
+        subscriptionPeriod,
+        userCount,
+        paymentAmount
+      };
+
+      let data = JSON.parse(localStorage.getItem("salesData") || "[]");
+      data.push(newData);
+      localStorage.setItem("salesData", JSON.stringify(data));
+
+      form.reset();
+      loadData();
+    });
+  </script>
+</body>
+</html>
