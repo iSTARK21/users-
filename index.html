@@ -1,241 +1,134 @@
-
 <!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<html lang="fa">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>سیستم حسابداری پیشرفته</title>
-  <!-- Bootstrap CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <!-- DataTables CSS -->
-  <link href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css" rel="stylesheet" />
-  <!-- فونت فارسی -->
-  <link href="https://cdn.fontcdn.ir/Font/Persian/Vazir.css" rel="stylesheet" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>حسابداری کاربران</title>
   <style>
     body {
-      font-family: 'Vazir', sans-serif;
-      background-color: #f5f7fa;
-      padding: 20px;
+      margin: 0;
+      font-family: "Vazirmatn", sans-serif;
+      background: #f0f4f8;
+      color: #333;
+      direction: rtl;
     }
-    h1 {
-      margin-bottom: 30px;
-      text-align: center;
-      color: #34495e;
-    }
-    .dataTables_wrapper .dataTables_filter {
-      text-align: left !important;
-    }
-    .modal-header {
-      background-color: #34495e;
+
+    #loader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #111;
       color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      text-align: center;
+      padding: 1rem;
     }
-    .btn-primary {
-      background-color: #34495e;
-      border-color: #34495e;
+
+    .hearts {
+      font-size: 2rem;
+      animation: pulse 1s infinite;
+      margin-top: 1rem;
     }
-    .btn-primary:hover {
-      background-color: #2c3e50;
-      border-color: #2c3e50;
+
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 0.5; }
+      50% { transform: scale(1.3); opacity: 1; }
+      100% { transform: scale(1); opacity: 0.5; }
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 100px auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    }
+
+    label {
+      display: block;
+      margin-top: 1rem;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+
+    button {
+      margin-top: 1.5rem;
+      padding: 10px 20px;
+      background-color: #007bff;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
 
-  <!-- صفحه لودینگ -->
-  <div id="loadingScreen" style="position:fixed;top:0;left:0;width:100%;height:100%;background:#fff;z-index:9999;display:flex;flex-direction:column;justify-content:center;align-items:center;font-family: 'Vazir', sans-serif; overflow: hidden;">
-    <h2 style="font-weight:bold;color:#34495e; margin-bottom:20px; position: relative; z-index: 10;">
-      Mehdi: I love you shamim 
-      <span style="color:#3498db;">💙💙💙</span>
-    </h2>
-
-    <!-- ظرف قلب‌ها -->
-    <div class="hearts-container" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none; overflow: hidden;"></div>
+  <!-- لودینگ -->
+  <div id="loader">
+    <div id="loader-text"></div>
+    <div class="hearts">💙💙💙</div>
   </div>
 
-  <div class="container" style="visibility: hidden;" id="mainContent">
-    <h1>سیستم حسابداری پیشرفته</h1>
+  <!-- محتوای اصلی -->
+  <div class="container" id="main-content" style="display:none;">
+    <h2>ثبت فروش یوزر</h2>
+    <label>نام مشتری:</label>
+    <input type="text" />
 
-    <!-- فرم اضافه کردن رکورد -->
-    <div class="card mb-4 shadow-sm">
-      <div class="card-header">افزودن فروش جدید</div>
-      <div class="card-body">
-        <form id="addRecordForm" class="row g-3">
-          <div class="col-md-4">
-            <label for="customerName" class="form-label">نام مشتری</label>
-            <input type="text" class="form-control" id="customerName" required />
-          </div>
-          <div class="col-md-4">
-            <label for="saleAmount" class="form-label">مبلغ فروش (تومان)</label>
-            <input type="number" class="form-control" id="saleAmount" required min="1" />
-          </div>
-          <div class="col-md-4">
-            <label for="saleDate" class="form-label">تاریخ فروش</label>
-            <input type="date" class="form-control" id="saleDate" required />
-          </div>
-          <div class="col-12">
-            <label for="paymentDetails" class="form-label">جزئیات پرداخت</label>
-            <textarea class="form-control" id="paymentDetails" rows="2" placeholder="مثلاً: قسط اول ۲۰۰،۰۰۰ تومان در تاریخ ..."></textarea>
-          </div>
-          <div class="col-12 text-center">
-            <button type="submit" class="btn btn-primary mt-3">افزودن فروش</button>
-          </div>
-        </form>
-      </div>
-    </div>
+    <label>مدت اشتراک:</label>
+    <select>
+      <option>1 ماهه</option>
+      <option>2 ماهه</option>
+      <option>3 ماهه</option>
+    </select>
 
-    <!-- جدول داده‌ها -->
-    <table id="salesTable" class="table table-striped table-bordered" style="width:100%">
-      <thead>
-        <tr>
-          <th>نام مشتری</th>
-          <th>مبلغ فروش</th>
-          <th>تاریخ فروش</th>
-          <th>جزئیات پرداخت</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- داده‌های اولیه اگر داری اینجا وارد کن -->
-      </tbody>
-    </table>
+    <label>مبلغ پرداختی:</label>
+    <input type="number" />
+
+    <label>توضیحات:</label>
+    <input type="text" />
+
+    <button>ثبت</button>
   </div>
-
-  <!-- مدال نمایش جزئیات پرداخت -->
-  <div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-
-sj Technology, [6/1/2025 3:26 PM]
-<h5 class="modal-title" id="paymentModalLabel">جزئیات پرداخت</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="بستن"></button>
-        </div>
-        <div class="modal-body" id="paymentModalBody">
-          <!-- جزئیات پرداخت اینجا نمایش داده میشه -->
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- JS ها -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-  <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-  <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
-
-  <style>
-    .heart {
-      position: absolute;
-      font-size: 24px;
-      color: #3498db;
-      animation-name: floatUp;
-      animation-timing-function: ease-in-out;
-      animation-iteration-count: infinite;
-      opacity: 0.8;
-      user-select: none;
-      pointer-events: none;
-    }
-
-    @keyframes floatUp {
-      0% {
-        transform: translateY(0) scale(1);
-        opacity: 0.8;
-      }
-      50% {
-        transform: translateY(-40px) scale(1.2);
-        opacity: 1;
-      }
-      100% {
-        transform: translateY(-80px) scale(1);
-        opacity: 0;
-      }
-    }
-  </style>
 
   <script>
-    $(document).ready(function() {
-      // راه‌اندازی DataTable
-      var table = $('#salesTable').DataTable({
-        language: {
-          url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/fa.json'
-        },
-        columnDefs: [
-          { orderable: false, targets: 3 } // ستون جزئیات پرداخت غیرقابل مرتب‌سازی
-        ]
-      });
+    const texts = [
+      "بی‌تو به سر نمی‌شود ای تو به تن در آمده\nدل ز تو برگرفته‌ام، دل ز تو بر نمی‌شود",
+      "هر کسی با شوق یاری می‌پرد\nمن ز شوقت با خیالت می‌پرم",
+      "چو با منی، چه حاجت که دیگران بپرسم؟\nز تو چو دل گرفتم، دگر چه دل‌ستانی؟",
+      "تو مرا جان و جهانی، چه کنم جان و جهان را؟\nکه تویی جان جهانی، ز تو پر شد همه جان‌ها",
+      "عاشق شو ار نه روزی کار جهان سر آید\nناخوانده نقش مقصود از کارگاه هستی",
+      "بی‌تو من از جان خود، ای جان و جانان بگذرم\nگر تو مرا ز آن خود دانی، به جانم آزمون",
+      "تو مرا جان و جهانی، ز تو دل نمی‌کنم\nگر بگویی که برو، جان ز تنم برون کنم",
+      "ای عشق، همه بهانه از توست\nمن خام شدم، پخته ز توست",
+      "گر نباشی تو مرا، عمر چه سود است مرا؟\nبی تو گر جان ببرند، جان نبرد از دل من",
+      "در هوایت بی‌قرارم روز و شب\nسر ز پایت برندارم روز و شب"
+    ];
 
-      // فرم افزودن رکورد جدید
-      $('#addRecordForm').on('submit', function(e) {
-        e.preventDefault();
-        const name = $('#customerName').val().trim();
-        const amount = parseInt($('#saleAmount').val());
-        const date = $('#saleDate').val();
-        const details = $('#paymentDetails').val().trim();
+    const today = new Date();
+    const index = today.getDate() % texts.length;
 
-        if(!name  !amount  !date) {
-          alert('لطفاً همه فیلدهای ضروری را پر کنید');
-          return;
-        }
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("loader-text").innerText = texts[index];
 
-        // شناسه یکتا برای دکمه نمایش جزئیات
-        const id = 'payment_' + Date.now();
-
-        // اضافه کردن ردیف به جدول
-        table.row.add([
-          name,
-          amount.toLocaleString('fa-IR') + ' تومان',
-          new Date(date).toLocaleDateString('fa-IR'),
-          <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#paymentModal" data-details="${details}" data-name="${name}">مشاهده</button>
-        ]).draw(false);
-
-        // پاک کردن فرم
-        this.reset();
-      });
-
-      // نمایش جزئیات پرداخت در مدال
-      $('#salesTable tbody').on('click', 'button[data-bs-toggle="modal"]', function() {
-        const details = $(this).data('details') || 'جزئیاتی موجود نیست';
-        const name = $(this).data('name') || 'مشتری';
-        $('#paymentModalLabel').text('جزئیات پرداخت ' + name);
-        $('#paymentModalBody').text(details);
-      });
-    });
-
-    // تولید و نمایش قلب‌های شناور به صورت تصادفی روی صفحه لودینگ
-    const heartsContainer = document.querySelector('.hearts-container');
-
-    function createHeart() {
-      const heart = document.createElement('div');
-      heart.classList.add('heart');
-      heart.textContent = '💙';
-      heart.style.left = Math.random() * 100 + 'vw';
-      heart.style.top = '100%';
-      heart.style.animationDuration = (4 + Math.random() * 3) + 's';
-      heartsContainer.appendChild(heart);
-
-      // حذف قلب بعد از اتمام انیمیشن
-      heart.addEventListener('animationend', () => {
-        heart.remove();
-      });
-    }
-
-    // هر 300 میلی‌ثانیه یک قلب جدید بساز
-    const heartInterval = setInterval(createHeart, 300);
-
-sj Technology, [6/1/2025 3:26 PM]
-// بعد از لود کامل صفحه، انیمیشن‌ها رو متوقف و صفحه لودینگ رو محو کن و محتوای اصلی رو نشون بده
-    window.addEventListener('load', function() {
-      clearInterval(heartInterval);
-      const loader = document.getElementById('loadingScreen');
-      loader.style.transition = 'opacity 0.5s ease';
-      loader.style.opacity = '0';
       setTimeout(() => {
-        loader.style.display = 'none';
-        // نمایش محتوای اصلی بعد از لودینگ
-        document.getElementById('mainContent').style.visibility = 'visible';
-      }, 500);
+        document.getElementById("loader").style.display = "none";
+        document.getElementById("main-content").style.display = "block";
+      }, 3000);
     });
   </script>
 </body>
